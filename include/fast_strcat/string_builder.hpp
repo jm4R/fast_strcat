@@ -1,34 +1,50 @@
-#include <iostream>
-#include <string_view>
-#include <tuple>
-#include <string>
+#ifndef jm4R_STRING_BUILDER
+#define jm4R_STRING_BUILDER
 
-template<typename... Args>
-struct string_builder
-{
-    std::tuple<Args&...> vals;
+#include "strcat.hpp"
+
+#include <string>
+#include <tuple>
+
+namespace mj {
+
+template <typename CharT, typename... Args>
+struct basic_string_builder {
+    std::tuple<const Args&...> vals;
 
     template <typename T>
-    constexpr auto operator<<(T& v) && -> string_builder<Args..., T>
+    constexpr auto operator<<(const T& v) && -> basic_string_builder<CharT, Args..., T>
     {
-        return {std::tuple_cat(vals, std::tuple<T&>{v})};
+        return { std::tuple_cat(vals, std::tuple<const T&>{ v }) };
     }
 
-    constexpr operator std::string() &&
+    constexpr operator std::basic_string<CharT>() &&
     {
-        auto len = std::size_t{0};
-        std::apply([&](auto&... x){  (len += ... += std::string_view{x}.length());  } , vals);
-
-        auto res = std::string{};
-        res.reserve(len);
-
-        std::apply([&](auto&... x){  (res += ... += x);  } , vals);
-
-        return res;
+        return std::apply([&](auto&... vals) { return mj::basic_strcat<CharT>(vals...); }, vals);
     }
 };
+
+template <typename... Args>
+using string_builder = basic_string_builder<char, Args...>;
+
+template <typename... Args>
+using wstring_builder = basic_string_builder<wchar_t, Args...>;
+
+template <typename CharT>
+constexpr auto basic_build_string()
+{
+    return basic_string_builder<CharT>{};
+}
 
 constexpr auto build_string()
 {
     return string_builder<>{};
 }
+
+constexpr auto build_wstring()
+{
+    return wstring_builder<>{};
+}
+}
+
+#endif //jm4R_STRING_BUILDER

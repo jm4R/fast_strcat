@@ -7,7 +7,11 @@ int main()
 {
     std::string test2 = "test2";
     const char* test4 = "test4";
-    std::string test = build_string() << "test1 " << test2 << " test3 " << test4;
+    std::string test = mj::build_string() << "test1 " << test2 << " test3 " << test4;
     assert(test == "test1 test2 test3 test4");
+
+    assert(mj::strcat("a", "b ", test2) == "ab test2");
+
+    assert(mj::wcscat(L"a", std::wstring{L"b"}, L"c") == L"abc");
 	return 0;
 }
