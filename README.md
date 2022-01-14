@@ -30,10 +30,14 @@ std::u16string makeUnixWPath(const std::u16string& appPath, const std::u16string
 }
 ```
 
-## string_builder
+## Using string_builder
 
-`TODO`: not description yet
+The `string_builder` class allows using stream-like syntax. It also allows using types that requires `std::to_string` conversion (only for `CharT == char`), like integers, floating-point values:
 
-## Benchmark
+```c++
+std::string makeProductId(const std::string& productName, int index)
+{
+    return mj::build_string() << productName << "_" << index;
+}
+```
 
-`TODO`
